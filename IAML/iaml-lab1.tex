@@ -14,90 +14,144 @@
 \begin{enumerate}
 \item How to construct simple classifiers using scikit-learn in python---Naive Bayes and Decision Trees 
 \item Why making an incorrect assumption that all features are independent makes it easy to fool classifiers. 
-\item How to evaluate the performance of a classifier 
+\item How to evaluate the performance of a classifier: precision, recall, F-Score as metrics. Cross-validation 
 \end{enumerate} 
 
-To prepare for the lab, start iPython and decide who will be Student 1 and who will be Student 2. Student 1 will start off Part 1 (Naive Bayes), and Student 2 will start off Part 2 (Decision Trees).\marginpar{Students should also use a unique code to tag their versions of files, if necessary.}
+To prepare for the lab, start iPython and decide who will be Student 1 and who will be Student 2. Student 1 will start off Part 1 (Naive Bayes), and Student 2 will start off Part 2 (Decision Trees).\marginpar{\small{Students should also use a unique code to tag their versions of files, if necessary.}}
 
-You will need three data sets for this lab, \texttt{spambase}, \texttt{spambase_test}, and \texttt{credit}.
-\marginpar{Note: This presumes that for each pair of students, a svn folder has been set up with the subfolders data, lab0, lab1, lab2, and lab3, and that all data sets are in the data folder. Lab 0 is the familiarisation lab.}
+You will need three data sets for this lab, \texttt{spambase}, \texttt{spambase$\_$test}, and \texttt{credit}.
+\marginpar{\small{Note: This presumes that for each pair of students, a svn folder has been set up with the subfolders data, lab0, lab1, lab2, and lab3, and that all data sets are in the data folder. Lab 0 is the familiarisation lab.}}
+
+Establish a connection, and tell each other what machine you are using, from where you are connecting, what type of connection you have, and by when you need to leave. This is especially important if it varies from the last time. Start up iPython, and then share your screen with each other (first Student 1, then Student 2). 
+
+All instructions are for the coder, unless otherwise noted. 
 
 \section{Naive Bayes: Spam Detection and Incorrect Independence Assumptions}
 
-The data set we will consider is the Spambase set, consisting of tagged emails from a single email account. Read through the description available for this data to get a feel for what you're dealing with. 
+\subsubsection*{Coder: Student 1, Observer: Student 2}
+
+The data set we will consider is the Spambase set, consisting of tagged emails from a single email account. Read through the description available for this data set to get a feel for what you're dealing with. If there are any terms that you do not understand, ask your tutor. Hint: Check that you understand what word frequencies mean.
+
+First, import sklearn and numpy as np. 
+
+Next, load the data using np.loadtxt from spambase.data and the header with feature names from the file spambase.header.\marginpar{\small{Add hint here.}}
+
+\paragraph{Observer:} \emph{Look up the readline function in python if S1 nees help reading in the header, and check the syntax of numpy.loadtxt}
+
+Create a markdown cell that describes the target classes and lists the number of features and the number of instances in the data set. Also list the index of the last feature that contains a word frequency and the index of the last feature that includes a character frequency.
+
+Now, split the data set into the last column (target) and the predictor columns. Use only predictor columns that represent word frequencies. 
+
+We are now ready to classify the data. Add a Markdown cell where you explain that classification is next.
+
+The  sklearn.naive$\_$bayes contains everything you need to train Naive Bayes classifiers for various distributions. We will use the Gaussian distribution for now. Create an instance of a Gaussian Naive Bayes Classifier (GaussianNB), train it using the fit() method, and check its predictions on the training data using the predict() method. 
+
+\paragraph{Observer:} Consult the scikit$\_$learn documentation 
+
+For evaluating classifier performance, you can use the classification\_report() function from the metrics library. Use print to view the output. Finally, find and display the prior probabilities for each class using the attribute class\_prior\_. 
+
+Now check in your notebook. 
+
+\paragraph{Discussion:} Can you come up with a reason for the good performance? What would be the main practical problems we would face if we were not to make this assumption for this particular dataset?\\
+Which words do you think might characterise non-spam emails particularly well? Note down 2--4 candidates. Write them down in a markdown cell. 
+\marginpar{\small{This discussion point `How long did your classifer take to train and classify? Given this, how scalable do you think the Naïve Bayes classifier is to large datasets? Can you come up with a good reason for this?' does not work for scikit\_learn on a MacBook Air, because it is very fast.}}
 
 
-A full list of the attributes in this data set will appear in the "Attributes" frame.
-Delete the capital_run_length_average, capital_run_length_longest and capital_run_length_total attributes by checking the box to their left and hitting the Remove button.
-The remaining attributes represent relative frequencies of various important words and characters in emails. We wish to convert these to Boolean values instead: 1 if the word or character is present in the email, 0 if not. To do this, select the Choose button in the Filter frame at the top of the window, and pick filters > unsupervised > attribute > NumericToBinary. Now hit the Apply button. All the numeric frequency attributes are now converted to Booleans. Each e-mail is now represented by a 55 dimensional vector representing whether or not a particular word exists in an e-mail. This is the so called bag of words representation (this is clearly a very crude assumption since it does not take into account the order of the words).
-Save this preprocessed data set for future use using the Save... button. You will need this for lab 2.
+\subsubsection*{Handover: Coder: S2, Observer: S1}
+\paragraph{Observer:} \emph{Check out S1's notebook and run it. How long does it take to train the classifier?}
 
-Given the data set we've just loaded, we wish to train a Naïve Bayes classifier to distinguish spam from regular email by fitting a distribution of the number of occurrences of each word for all the spam and non-spam e-mails. Under the Classify tab:
+Determine the average frequency of each of the candidates you identified earlier for both ham and spam and add the information to the markdown cell using a table. 
 
-Select Choose in the Classifier frame at the top and select classifiers > bayes > NaiveBayes.
-Leave the default settings and hit Start to build the classifier. Study the output produced, most importantly the percentages of correctly and incorrectly classified instances. You probably will notice that your classifer does rather well despite making a very strong assumption on the form of the data.
-Can you come up with a reason for the good performance? What would be the main practical problems we would face if we were not to make this assumption for this particular dataset?
-How long did your classifer take to train and classify? Given this, how scalable do you think the Naïve Bayes classifier is to large datasets? Can you come up with a good reason for this?
 
-Examine the classifier models produced by Weka (printed above the performance summary). Find the prior probabilities for each class.
+\subsubsection*{In parallel:}
 
-How does Naïve Bayes compute the probability of an e-mail belonging to a class (spam/not spam)?
-Compute the conditional probability of observing the word "3d" given that an e-mail is spam P(3d|spam) and that it is non-spam P(3d|non-spam). To do this, we need to use the counts of the built model that are produced within the Classifier output screen under the Classify tab. The general format of the Weka count output is (Note: this is a toy example. You will need to examine your Weka output to find the true counts for the word "3d".):
- 	Class
- 	0	1
+For the final part of this section we will now pretend we are spammers wishing to fool a spam checking system based on Naïve Bayes into classifying a spam e-mail as ham (i.e. a valid e-mail). 
 
-0	1
-2
-1	3
-4
-total	4	6
-This means that 4 instances (e.g. e-mails) contain that particular attribute value (e.g. the word "3d") in Class 1 (e.g. Is Spam). 2 instances didn't contain that value of the attribute in Class 1. 3 instances of Class 0 contained that attribute value, whilst 1 instance of Class 0 (e.g. Not Spam) didn't contain that attribute value. The totals reflect the number of instances belonging to both classes e.g. the number of e-mails that are Spam and not Spam.
+In spambaseTest.data, you can find an example of an email that was classified as spam. Make a copy of the data set using your ID (spambaseTestID.data) and modify it to make the email look more like ``ham''. 
 
-For the final part of this section we will now pretend we are spammers wishing to fool a spam checking system based on Naïve Bayes into classifying a spam e-mail as ham (i.e. a valid e-mail). We will now use all of the training data to train our classifier and apply the learnt classifer to a dedicated test set. Load the test set in Weka. Under the Classify tab, select supplied test set > set > open file and set the test file to the supplied spambase_test.arff. This ARFF file contains the binary vector representing one spam e-mail. Run the Naïve Bayes classifer on this test set. Does the classifer classify the spam e-mail correctly?
+\paragraph{Observer:} \emph{For the following steps, save your current notebook in a separate file with your ID. We will be keeping the notebook edited by Student 2 as our main notebook for the moment, but we don't want to lose any of your notes.}
 
-Open the test file spambase_test.arff in emacs or another text editor. Identify good non-spam words and add these to the e-mail. Important: Leave the class label (last attribute value) in the test data file untouched. During testing, Weka will ignore this attribute and will instead use our previously trained classifier to predict the class label of this e-mail. Re-run the classifer on the modified test set. Has the class label (spam/non-spam) for this e-mail changed?
+Load both the original test data and  your modified data using np.loadtext and split into target and predictors as above. Add a markdown cell where you describe your modifications. Predict the category of both. Has the class label (spam/non-spam) for this e-mail changed?
 
-You've now managed to switch the predicted class label for that e-mail. Adding more “hammy” words to this e-mail has sufficiently increased the probability that this e-mail is ham so the classifier now outputs "ham" as the e-mail's class label (by changing the word content of the e-mail you have added extra evidence or "votes" towards this e-mail being classified as ham). This is the "stuffing" example given in the lectures and is directly caused by the independence assumption that is made by Naive Bayes. Each word contributes independently of each other to the final score. This is a reason that a lot of spam e-mails include random excerpts from the passages of books so as to effectively add “ hammy” words in the hope that the spam e-mail will bypass the spam filters. For this reason, in practice, many commercial e-mail systems (consider Gmail) likely use a lot more sophisticated spam detection models.
-DECISION TREES
+\paragraph{Discussion:} Compare the performance of your changes. Who did best, and why? If one of you didn't manage to persuade your classifier that the email is a non-spam email, try again. Use the method predict\_proba to check the probability that your new data point is spam versus ham. 
 
-One of the great advantages of decision trees is their interpretability. The rules learnt for classification are easy for a person to follow, unlike the opaque "black box" of many other methods, such as neural networks. We demonstrate the utility of this using a German credit data set. You can read a description of this dataset at the UCI site. The task is to predict whether a loan approval is good or bad credit risk based on 20 attributes. We've simplified the data set somewhat, particularly making attribute names and values more meaningful.
+You've now managed to switch the predicted class label for that e-mail. Adding more ``hammy'' words to this e-mail has sufficiently increased the probability that this e-mail is ham so the classifier now outputs ``ham" as the e-mail's class label (by changing the word content of the e-mail you have added extra evidence or ``votes'' towards this e-mail being classified as ham). This is the ``stuffing'' example given in the lectures and is directly caused by the independence assumption that is made by Naive Bayes. Each word contributes independently of each other to the final score. This is a reason that a lot of spam e-mails include random excerpts from the passages of books so as to effectively add ``hammy'' words in the hope that the spam e-mail will bypass the spam filters. For this reason, in practice, many commercial e-mail systems (consider Gmail) likely use a lot more sophisticated spam detection models.
 
-Download the credit.arff dataset and load it to Weka.
+\section{Decision Trees} 
 
-When presented with a dataset, it is usually a good idea to visualise it first. Go to the Visualise tab. Click on any of the scatter plots to open a new window which shows the scatter plot for two selected attributes. Try visualising a scatter plot of age and duration. Do you notice anything unusual? You can click on any data point to display all it's values.
+\subsubsection*{S2 Coder, S1 Observer}
 
-In the previous point you should have found a data point, which seems to be corrupted, as some of its values are nonsensical. Even a single point like this can significantly affect the performance of a classifier. How do you think it would affect Decision trees? How about Naive Bayes? A good way to check this is to test the performance of each classifier before and after removing this datapoint.
+One of the great advantages of decision trees is their interpretability. The rules learnt for classification are easy for a person to follow, unlike the opaque ``black box'' of many other methods, such as neural networks. We demonstrate the utility of this using a German credit data set. You can read a description of this dataset at the UCI site. The task is to predict whether a loan approval is good or bad credit risk based on 20 attributes. We've simplified the data set somewhat, particularly making attribute names and values more meaningful.\marginpar{\small{Is there a step by step documentation so that I can recreate this easily as a csv file from the original data.}}
 
-To remove this instance from the dataset we will use a filter. We want to remove all instances, where the age of an applicant is lower than 0 years, as this suggests that the instance is corrupted. In the Preprocess tab click on Choose in the Filter pane. Select filters > unsupervised > instance > RemoveWithValues. Click on the text of this filter to change the parameters. Set the attribute index to 13 (Age) and set the split point at 0. Click Ok to set the parameters and Apply to apply the filter to the data. Visualise the data again to verify that the invalid data point was removed.
+Load the data set and provide a description similar to the one for spambase in a markdown box. 
 
-On the Classify tab, select the Percentage split test option and change its value to 90%. This way, we will train the classifiers using 90% of the training data and evaluate their performance on the remaining 10%.
+When presented with a dataset, it is usually a good idea to visualise it first. Create a scatter plot  for age and duration. Do you notice anything unusual? Use the plot function from matplotlib.pyplot to produce the scatterplot. 
 
-First, train a decision tree classifier with default options. Select classifiers > trees > J48 and click Start. J48 is the Weka implementation of the C4.5 algorithm, which uses the normalized information gain criterion to build a decision tree for classification.
-After training the classifier, the full decision tree is output for your perusal; you may need to scroll up for this. The tree may also be viewed in graphical form by right-clicking in the Result list and selecting Visualize tree; unfortunately this format is very cluttered for large trees. Such a tree accentuates one of the strengths of decision tree algorithms: they produce classifiers which are understandable to humans. This can be an important asset in real life applications (people are seldom prepared to do what a computer program tells them if there is no clear explanation). Observe the output of the classifier and try to answer the following questions:
+\paragraph{Observer:} \emph{Check Lab 0 for instructions on how to plot.}
 
-How would you assess the performance of the classifier? Is the Percentage of Correctly Classified Instances a sufficient measure in this case? Why? Hint: check the number of good and bad cases in the test sample, using the confusion matrix. Each column of the matrix represents the instances in a predicted class, while each row represents the instances in an actual class. For example let us define an experiment from P positive instances and N negative instances. The four outcomes can be formulated in a 2 by 2 contingency table or confusion matrix, the breakdown of which is given below:
+\paragraph{Discussion:} The plot should have shown you a data point which seems to be corrupted, as some of its values are nonsensical. Even a single point like this can significantly affect the performance of a classifier. How do you think it would affect Decision trees? How about Naive Bayes? 
 
- 	actual value
- 	p	n	total
-prediction
-outcome	p'	True
-Positive	False
-Positive	P'
-n'	False
-Negative	True
-Negative	N'
-total	P	N
-One benefit of a confusion matrix is that it is easy to see if the system is confusing two classes (i.e. commonly mislabeling one as another).
+A good way to check this is to test the performance of each classifier before and after removing this datapoint.
 
+Find the row which corresponds to the corrupted instance, and create a new instance of both your predictor and your target data without the invalid data point. Plot age versus duration again to make sure you have eliminated it. Once you're satisfied that you have found the correct data point, make a note in a markdown cell to explain why this one was eliminated.
+
+\paragraph{Observer:} \emph{Read up on the python functions for finding all rows with a specific value in a given column in an array.}
+
+Let's now train a decision tree. The corresponding sklearn library is called sklearn.tree, and you want the class DecisionTree; DecisionTreeClassifier() instantiates an object. First, train the decision tree as before using the fit() method and look how well it fits the training data using the predict() method. 
+
+After training the classifier, we're plotting the decision tree. Import the library pydot2 and import the function export\_graphviz from sklearn.tree. 
+
+\paragraph{Observer:} Read up on the syntax of export\_graphviz here: \url{http://scikit-learn.org/stable/modules/tree.html}
+
+
+Such a tree accentuates one of the strengths of decision tree algorithms: they produce classifiers which are understandable to humans. This can be an important asset in real life applications (people are seldom prepared to do what a computer program tells them if there is no clear explanation). 
+
+Next, evaluate its performance using metrics.classification\_report. In addition, look at the confusion matrix using metrics.confusion\_matrix which shows you how often data items from class are classified correctly, and how often they are misclassified. Report your findings in a markdown cell. 
+
+\paragraph{Observer:} \emph{Check the syntax of the function for producing a confusion matrix.}
+
+\paragraph{Discussion:} How would you assess the performance of the classifier? Is accuracy a sufficient measure in this case? Why? 
 Looking at the decision tree itself, are the rules it applies sensible? Are there any branches which appear absurd? At what depth of the tree? What does this suggest? 
-Hint: Check the rules applied after following the paths: (a) CheckingAccount = <0, Foreign = yes, Duration >11, Job = skilled, OtherDebtors = none, Duration <= 30 and (b) CheckingAccount = <0, Foreign = yes, Duration >11, Job = unskilled.
+Hint: Check the rules applied after following the paths: (a) CheckingAccount = $<0$, Foreign = yes, Duration $>11$, Job = skilled, OtherDebtors = none, Duration $<=$ 30 and (b) CheckingAccount = $<0$, Foreign = yes, Duration $>11$, Job = unskilled. How does the decision tree deal with classification in the case where there are zero instances in the training set corresponding to that particular path in the tree?
 
-How does the decision tree deal with classification in the case where there are zero instances in the training set corresponding to that particular path in the tree (e.g. those leaf nodes that have (0:0))?
 
-Now, explore the effect of the confidenceFactor option. You can find this by clicking on the Classifer name (to the right of the Choose button on the Classify tab). On the Classifier options window, click on the More button to find out what the confidence factor controls. Try the values 0.1, 0.2, 0.3 and 0.5. What is the performance of the classifier at each case? Did you expect this given your observations in the previous questions? Why do you think this happens?
+Now, let's use 10-fold cross-validation. You will need the library cross\_validation from sklearn for this. Here is where our habit of instantiating a classifier before training it comes in handy, as the function for computing cross validated scores, cross\_validation.cross\_val\_scores, takes such a classifier instance as its argument. You can specify the number of folds using the parameter cv. Determine the mean and standard deviation of the scores. Create a markdown cell where you document both values. 
 
-Suppose that it is worse to classify a customer as good when they are bad, than it is to classify a customer as bad when they are good. Which value would you pick for the confidence factor? Which performance measure would you base your decision on?
+\paragraph{Observer:} Check the syntax on \url{http://scikit-learn.org/stable/modules/cross_validation.html#computing-cross-validated-metrics}
 
-If you have time: Finally we will create a random decision forest and compare the performance of this classifier to that of the decision tree and the decision stump. The random decision forest is an ensemble classifier that consists of many decision trees and outputs the class that is the mode of the class's output by individual trees. Again set the test option Percentage split to 90%. Select classifiers > trees > RandomForest and hit Start. Again, observe the output. How high can you get the performance of the classifier by changing the number of trees (numTrees) parameter? How does the random decision forest compare performance wise to the decision tree and decision stump?
+\section{If you have time}
+
+Use a different classification method on each data set, i.e., Naive Bayes on the credit data, and decision trees on spambase. Divide the labour, so that each of you looks at a single data set. Which classifier outperforms the other? What is the difference when we use cross validation? 
+
+
+
+\begin{appendix}
+	
+	\section{About Spambase}\label{app:spambase}
+	
+	For more information, see file `spambase.DOCUMENTATION' at the
+	UCI Machine Learning Repository: \url{http://www.ics.uci.edu/~mlearn/MLRepository.html}
+	
+	\paragraph{class:} nominal {0,1} class attribute of type spam
+	= denotes whether the e-mail was considered spam (1) or not (0), 
+	i.e. unsolicited commercial e-mail.  
+	\paragraph{word\_freq\_WORD:} 
+    48 continuous real [0,100] attributes
+	= percentage of words in the e-mail that match WORD,
+	i.e. 100 * (number of times the WORD appears in the e-mail) / 
+	total number of words in e-mail.  A ``word'' in this case is any 
+	string of alphanumeric characters bounded by non-alphanumeric 
+	characters or end-of-string.
+	
+	\paragraph{char\_freq\_CHAR:} 6 continuous real [0,100] attributes 
+	= percentage of characters in the e-mail that match CHAR,
+	i.e. 100 * (number of CHAR occurences) / total characters in e-mail
+	
+\end{appendix}
+	
+	
+	
+
+	
 
 \end{document}
