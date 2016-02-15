@@ -2,8 +2,9 @@
 
 import numpy as np
 import matplotlib.pyplot as plt
-
 import sklearn
+<<<<<<< Local Changes
+<<<<<<< Local Changes
 import pydot
 from sklearn.externals.six import StringIO
 
@@ -67,7 +68,14 @@ graph = pydot.graph_from_dot_data(dot_data.getvalue())
 Image(graph.create_png())  
 # graph.write_png('titanic.png') is the iPython command, alternatively use get_code 
 
+scores = cross_validation.cross_val_score(spamcltree, spamFeat, spamSpam, cv=10)
 
+print("Accuracy: %0.2f (+/- %0.2f)" % (scores.mean(), scores.std() * 2))
 
+=======
+>>>>>>> External Changes
+=======
+>>>>>>> External Changes
 
+data =  np.loadtxt(fname = f, delimiter = ',')
 
